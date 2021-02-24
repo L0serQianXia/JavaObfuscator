@@ -100,7 +100,7 @@ public class JavaObfuscator {
 		for(Object transformer : Transformers.transformers) {
 			Transformer transformer2 = (Transformer) transformer;
 			int times = transformer2.run();
-			System.out.println(times);
+			System.out.println(transformer2.getName() +" did " + times + " times");
 		}
 	}
 	

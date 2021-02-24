@@ -13,11 +13,6 @@ import org.objectweb.asm.tree.MethodNode;
 import me.qianxia.obfuscator.JavaObfuscator;
 import me.qianxia.obfuscator.transformer.Transformer;
 
-/**
- * @description String pool
- * @author QianXia
- * @data 2021/2/24
- */
 public class StringTransformer extends Transformer {
 
 	public StringTransformer() {
@@ -65,7 +60,7 @@ public class StringTransformer extends Transformer {
 		}
 		
 		JavaObfuscator.INSTANCE.classes.put(stringPoolClassNode.name, stringPoolClassNode);
-		return num;
+		return 0;
 	}
 	
 	private int randomInt() {

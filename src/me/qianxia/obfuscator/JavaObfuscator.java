@@ -20,10 +20,6 @@ import org.objectweb.asm.tree.ClassNode;
 import me.qianxia.obfuscator.transformer.Transformer;
 import me.qianxia.obfuscator.transformer.Transformers;
 
-/**
- * @author QianXia
- * @data 2021/2/24
- */
 public class JavaObfuscator {
 	public Map<String, ClassNode> classes = new HashMap<>();
 	public Map<String, byte[]> junkFiles = new HashMap<>();
@@ -45,37 +41,6 @@ public class JavaObfuscator {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-	}
-
-	public void loadInput(String inputFilePath) throws ZipException, IOException {
-		File inputFile = new File(inputFilePath);
-		ZipFile zipFile = new ZipFile(inputFile);
-		Enumeration<? extends ZipEntry> entries = zipFile.entries();
-		
-		while(entries.hasMoreElements()) {
-			ZipEntry entry = entries.nextElement();
-			String name = entry.getName();
-			InputStream inputStream = zipFile.getInputStream(entry);
-			
-			if(name.endsWith(".class")) {
-				ClassReader classReader = new ClassReader(inputStream);
-				ClassNode classNode = new ClassNode();
-				classReader.accept(classNode, ClassReader.SKIP_FRAMES);
-				classes.put(classNode.name, classNode);
-			} else {
-				junkFiles.put(name, toByteArray(inputStream));
-			}
-		}
-		
-		zipFile.close();
-	}
-	
-	public void runTransformer() {
-		for(Transformer transformer : Transformers.transformers) {
-			Transformer transformer2 = (Transformer) transformer;
-			int times = transformer2.run();
-			System.out.println(transformer2.getName() + " do " + times + " times!");
 		}
 	}
 	
@@ -123,14 +88,45 @@ public class JavaObfuscator {
                     e.printStackTrace();
                 }
             });
-            zOut.setComment(COMMENT);
+            zOut.setComment(COMMENT );
             zOut.flush();
             zOut.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
+	
+	public void runTransformer() {
+		for(Object transformer : Transformers.transformers) {
+			Transformer transformer2 = (Transformer) transformer;
+			int times = transformer2.run();
+			System.out.println(times);
+		}
+	}
+	
+	public void loadInput(String inputFilePath) throws ZipException, IOException {
+		File inputFile = new File(inputFilePath);
+		ZipFile zipFile = new ZipFile(inputFile);
+		Enumeration<? extends ZipEntry> entries = zipFile.entries();
+		
+		while(entries.hasMoreElements()) {
+			ZipEntry entry = entries.nextElement();
+			String name = entry.getName();
+			InputStream inputStream = zipFile.getInputStream(entry);
+			
+			if(name.endsWith(".class")) {
+				ClassReader classReader = new ClassReader(inputStream);
+				ClassNode classNode = new ClassNode();
+				classReader.accept(classNode, ClassReader.SKIP_FRAMES);
+				classes.put(classNode.name, classNode);
+			} else {
+				junkFiles.put(name, toByteArray(inputStream));
+			}
+		}
+		
+		zipFile.close();
+	}
+	
 	private byte[] toByteArray(InputStream inputStream) throws IOException {
 		ByteArrayOutputStream bOutputStream = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024 * 4];

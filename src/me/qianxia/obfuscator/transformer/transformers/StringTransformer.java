@@ -60,7 +60,7 @@ public class StringTransformer extends Transformer {
 		}
 		
 		JavaObfuscator.INSTANCE.classes.put(stringPoolClassNode.name, stringPoolClassNode);
-		return 0;
+		return num;
 	}
 	
 	private int randomInt() {

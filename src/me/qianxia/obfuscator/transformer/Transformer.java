@@ -1,5 +1,9 @@
 package me.qianxia.obfuscator.transformer;
 
+/**
+ * @author QianXia
+ * @data 2021/2/24
+ */
 public abstract class Transformer {
 	private String name;
 	
@@ -11,5 +15,9 @@ public abstract class Transformer {
 		return this.name;
 	}
 	
+	/**
+	 *  执行混淆
+	 * @return 混淆执行次数
+	 */
 	public abstract int run();
 }

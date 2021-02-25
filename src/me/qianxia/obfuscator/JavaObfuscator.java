@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -17,31 +19,41 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 
+import me.qianxia.obfuscator.asm.MyClassWriter;
+import me.qianxia.obfuscator.exceptions.ClassPathNotFoundException;
 import me.qianxia.obfuscator.transformer.Transformer;
 import me.qianxia.obfuscator.transformer.Transformers;
 
 public class JavaObfuscator {
 	public Map<String, ClassNode> classes = new HashMap<>();
 	public Map<String, byte[]> junkFiles = new HashMap<>();
-	private String outputName = "out.jar";
+    public Map<String, ClassReader> classpath = new HashMap<>();
+    
+    private String inputName = "in.jar";
+	private String outputName = "";
+    private String classpathPath = "";
+    
+    private static final String NAME = "JavaObfuscator";
+    private static final double VERSION = 1.0;
+    private static final String AUTHOR = "千夏";
 	private final String COMMENT = "https://github.com/L0serQianXia/JavaObfuscator";
 	
 	public static JavaObfuscator INSTANCE;
-	
+
 	public JavaObfuscator() {
 		INSTANCE = this;
 	}
 	
-	public void run(String[] arg) {
+	public void run(String[] args) {
 		try {
-			loadInput("in.jar");
+	        loadConfig(args);
+	        loadClasspath();
+			loadInput(inputName);
 			runTransformer();
 			writeFile();
-		} catch (ZipException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		} 
 	}
 	
     public void writeFile() {
@@ -55,11 +67,14 @@ public class JavaObfuscator {
             ZipOutputStream zOut = new ZipOutputStream(new FileOutputStream(outputFile));
             classes.values().forEach(classNode -> {
                 try {
-                    ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+                    ClassWriter cw = new MyClassWriter(ClassWriter.COMPUTE_FRAMES);
                     try {
                         classNode.accept(cw);
-                    } catch (NegativeArraySizeException | ArrayIndexOutOfBoundsException e) {
-                        cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+                    } catch (ClassPathNotFoundException e) {
+                        cw = new MyClassWriter(ClassWriter.COMPUTE_MAXS);
+                        classNode.accept(cw);
+					} catch (NegativeArraySizeException | ArrayIndexOutOfBoundsException e) {
+                        cw = new MyClassWriter(ClassWriter.COMPUTE_MAXS);
                         classNode.accept(cw);
                     }
                     byte[] b = cw.toByteArray();
@@ -126,7 +141,73 @@ public class JavaObfuscator {
 		
 		zipFile.close();
 	}
-	
+
+    private void loadClasspath() {
+        if (classpathPath.isEmpty()) {
+            return;
+        }
+        File fileDir = new File(classpathPath);
+        Stream<File> files = Arrays.stream(fileDir.listFiles());
+        files.filter(this::isJarFile).forEach(file -> {
+            try {
+                ZipFile zip = new ZipFile(file);
+                Enumeration<? extends ZipEntry> zipEntries = zip.entries();
+                while (zipEntries.hasMoreElements()) {
+                    ZipEntry entry = zipEntries.nextElement();
+                    if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+                        InputStream is = zip.getInputStream(entry);
+                        ClassReader cr = new ClassReader(is);
+                        classpath.put(entry.getName().replace(".class", ""), cr);
+                    }
+                }
+                zip.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+    
+    private boolean isJarFile(File file) {
+        String fileName = file.getName();
+        return fileName.endsWith(".jar");
+    }
+    
+    private void loadConfig(String[] args) {
+        for (int i = 0; i < args.length; i++) {
+            if ("--input".equalsIgnoreCase(args[i])) {
+                inputName = args[i + 1];
+            } else if ("--output".equalsIgnoreCase(args[i])) {
+                outputName = args[i + 1];
+            } else if ("--classpath".equalsIgnoreCase(args[i])) {
+                classpathPath = args[i + 1].trim();
+            } else if ("--help".equalsIgnoreCase(args[i])) {
+                this.showHelpMenu();
+                System.exit(0);
+            } 
+        }
+
+        if (outputName.isEmpty()) {
+            outputName = inputName.replace(".jar", ".obf.jar");
+        }
+    }
+    
+    public void showHelpMenu() {
+        System.out.println("--------------------------------------");
+        System.out.println("--input 需要被混淆的文件");
+        System.out.println("--output 输出的文件");
+        System.out.println("--classpath 支持库的目录 （必须选定一个目录 目录下需要放支持库）");
+        System.out.println("--------------------------------------");
+        System.out.println();
+        System.out.println();
+    }
+    
+    public void showVersionMessage() {
+        System.out.println("--------------------------------------");
+        System.out.println(String.format("%s V%s  by %s", NAME, VERSION, AUTHOR));
+        System.out.println("--------------------------------------");
+        System.out.println();
+    }
+    
 	private byte[] toByteArray(InputStream inputStream) throws IOException {
 		ByteArrayOutputStream bOutputStream = new ByteArrayOutputStream();
 		byte[] buffer = new byte[1024 * 4];

@@ -27,6 +27,7 @@ import me.qianxia.obfuscator.config.Config;
 import me.qianxia.obfuscator.exceptions.ClassPathNotFoundException;
 import me.qianxia.obfuscator.exceptions.LoadFileException;
 import me.qianxia.obfuscator.transformer.Transformer;
+import me.qianxia.obfuscator.transformer.transformers.InvokeMethodTransformer;
 import me.qianxia.obfuscator.transformer.transformers.StringTransformer;
 import me.qianxia.obfuscator.utils.LogUtils;
 import me.qianxia.obfuscator.utils.TimerUtils;
@@ -37,8 +38,8 @@ import me.qianxia.obfuscator.utils.TimerUtils;
  **/
 public class JavaObfuscator {
     private static final String AUTHOR = "QianXia";
-    public static final String OBFUSCATORS = "1";
-    public static final String DESCRIBES = "字符串";
+    public static final String OBFUSCATORS = "1-2";
+    public static final String DESCRIBES = "字符串-调用";
     public static final double VERSION = 1.0;
     public static final String NAME = "JavaObfuscator";
     private final String COMMENT = "https://github.com/L0serQianXia/JavaObfuscator";
@@ -53,7 +54,7 @@ public class JavaObfuscator {
 
     private String inputName = "input.jar";
     private String outputName = "output.jar";
-    private String myObfuscators = "1";
+    private String myObfuscators = "12";
     private String classpathPath = "";
     private String excluded = "";
 
@@ -66,6 +67,7 @@ public class JavaObfuscator {
      */
     private void addTransformers() {
         TRANSFORMERS.add(new StringTransformer());
+        TRANSFORMERS.add(new InvokeMethodTransformer());
     }
 
     /**

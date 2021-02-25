@@ -24,5 +24,9 @@ public abstract class Transformer {
 		return this.name;
 	}
 	
+    public JavaObfuscator getObfuscator() {
+        return obfuscator;
+    }
+    
 	public abstract int run();
 }

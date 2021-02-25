@@ -111,6 +111,9 @@ public class InvokeMethodTransformer extends Transformer {
 		return null;
 	}
 	
+	/**
+	 * https://github.com/ItzSomebody/radon
+	 */
     public int getReturnOpcode(Type type) {
         switch (type.getSort()) {
             case Type.BOOLEAN:
@@ -134,7 +137,10 @@ public class InvokeMethodTransformer extends Transformer {
                 throw new AssertionError("Unknown type sort: " + type.getClassName());
         }
     }
-
+    
+	/**
+	 * https://github.com/ItzSomebody/radon
+	 */
     public int getVarOpcode(Type type, boolean store) {
         switch (type.getSort()) {
             case Type.BOOLEAN:

@@ -1,6 +1,5 @@
 package me.qianxia.obfuscator.transformer.transformers;
 
-import java.util.Collection;
 import java.util.Random;
 
 import org.objectweb.asm.Opcodes;
@@ -10,7 +9,6 @@ import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import me.qianxia.obfuscator.JavaObfuscator;
 import me.qianxia.obfuscator.transformer.Transformer;
 
 public class StringTransformer extends Transformer {
@@ -21,7 +19,6 @@ public class StringTransformer extends Transformer {
 
 	@Override
 	public int run() {
-		Collection<ClassNode> classes = JavaObfuscator.INSTANCE.classes.values();
 		int num = 0;
 		
         ClassNode stringPoolClassNode = new ClassNode();
@@ -30,7 +27,7 @@ public class StringTransformer extends Transformer {
         stringPoolClassNode.access = Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER;
         stringPoolClassNode.version = Opcodes.V1_8;
         
-		for(ClassNode classNode : classes) {
+		for(ClassNode classNode : classes.values()) {
 			for(MethodNode methodNode : classNode.methods) {
 				for(AbstractInsnNode abstractInsnNode : methodNode.instructions) {
 					if(!(abstractInsnNode instanceof LdcInsnNode)) {
@@ -59,7 +56,7 @@ public class StringTransformer extends Transformer {
 			}
 		}
 		
-		JavaObfuscator.INSTANCE.classes.put(stringPoolClassNode.name, stringPoolClassNode);
+		obfuscator.classes.put(stringPoolClassNode.name, stringPoolClassNode);
 		return num;
 	}
 	

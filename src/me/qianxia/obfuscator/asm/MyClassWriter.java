@@ -116,7 +116,7 @@ public class MyClassWriter extends ClassWriter {
 	}
 
 	private ClassReader getClassReader(final String className) {
-		ClassReader cr = JavaObfuscator.INSTANCE.classpath.get(className);
+		ClassReader cr = JavaObfuscator.classpath.get(className);
 		if (cr == null) {
 			throw new ClassPathNotFoundException(className);
 		}

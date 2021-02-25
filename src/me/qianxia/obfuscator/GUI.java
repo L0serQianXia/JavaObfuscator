@@ -71,7 +71,7 @@ public class GUI extends JFrame {
             height += 30;
         }
         
-        if(height < 60) {
+        if(height < 100) {
         	height += 100;
         }
         setBounds(500, 500, 340, height + 120);

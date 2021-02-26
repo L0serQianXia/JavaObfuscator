@@ -7,7 +7,7 @@ import org.objectweb.asm.tree.ClassNode;
 import me.qianxia.obfuscator.JavaObfuscator;
 
 public abstract class Transformer {
-	private String name;
+    private String name;
     protected static JavaObfuscator obfuscator;
     protected static Map<String, ClassNode> classes;
 
@@ -15,18 +15,18 @@ public abstract class Transformer {
         obfuscator = obf;
         classes = classess;
     }
-    
-	public Transformer(String name) {
-		this.name = name;
-	}
-	
-	public String getName() {
-		return this.name;
-	}
-	
+
+    public Transformer(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
     public JavaObfuscator getObfuscator() {
         return obfuscator;
     }
-    
-	public abstract int run();
+
+    public abstract int run();
 }

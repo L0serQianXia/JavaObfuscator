@@ -13,7 +13,7 @@ public class LogUtils {
     private static TimerUtils timer = new TimerUtils();
     public static boolean isGUI = false;
     public static JTextArea GUIText = null;
-    
+
     /**
      * 记录日志&记录时间
      *

@@ -10,8 +10,8 @@ import java.net.URLConnection;
  * @create: 2021-02-25 15:06
  **/
 public class HttpUtils {
-    public static String get(String url){
-        try{
+    public static String get(String url) {
+        try {
             String result = "";
             URL webURL = new URL(url);
             URLConnection connection = webURL.openConnection();
@@ -21,15 +21,15 @@ public class HttpUtils {
             connection.connect();
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
-            while ((line = in.readLine()) != null){
+            while ((line = in.readLine()) != null) {
                 result += line;
             }
-            if(in != null){
+            if (in != null) {
                 in.close();
             }
             return result;
-        }catch (Exception e){
-        	e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

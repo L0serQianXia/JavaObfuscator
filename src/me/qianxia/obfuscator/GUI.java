@@ -192,8 +192,8 @@ public class GUI extends JFrame {
                 if (file == null) {
                     return;
                 }
-                inputTextField.setText(file.getAbsolutePath());
-                obf.setInput(file.getAbsolutePath());
+                outputTextField.setText(file.getAbsolutePath());
+                obf.setOutput(file.getAbsolutePath());
             }
         });
         btnNewButton_1_1.setBounds(205, 102, 93, 23);
